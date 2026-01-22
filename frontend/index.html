@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>LifeOS Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>LifeOS</h1>
+  <p>Manage Tasks • Money • Habits</p>
+</header>
+
+<main class="grid">
+
+  <!-- TASK MANAGEMENT -->
+  <section class="card">
+    <h2>Daily Tasks</h2>
+    <input id="taskInput" placeholder="Enter task">
+    <button onclick="addTask()">Add Task</button>
+    <ul id="taskList"></ul>
+  </section>
+
+  <!-- FINANCE MANAGEMENT -->
+  <section class="card">
+    <h2>Finance Manager</h2>
+
+    <input type="number" id="amount" placeholder="Amount ₹">
+    
+    <select id="category">
+      <option>Food</option>
+      <option>Transport</option>
+      <option>Education</option>
+      <option>Entertainment</option>
+      <option>Other</option>
+    </select>
+
+    <select id="type">
+      <option value="income">Income</option>
+      <option value="expense">Expense</option>
+    </select>
+
+    <button onclick="addTransaction()">Add Transaction</button>
+
+    <p id="balance">Balance: ₹0</p>
+    <p id="warning" class="warning"></p>
+
+    <ul id="transactionList"></ul>
+  </section>
+
+  <!-- HABIT TRACKER -->
+  <section class="card">
+    <h2>Habit Tracker</h2>
+    <button onclick="markHabit()">✔ Mark Today Complete</button>
+    <p id="streak">Streak: 0 days</p>
+  </section>
+
+</main>
+
+<footer>
+  <button onclick="saveData()">Save All Data</button>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
