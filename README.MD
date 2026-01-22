@@ -46,3 +46,69 @@ Student-Dost/
 ├── index.html
 ├── style.css
 └── script.js
+
+
+---
+
+## ▶️ How to Run
+
+### Option 1: Direct Browser Run
+1. Download or clone the project
+2. Double-click `index.html`
+3. The application runs in your browser
+
+### Option 2: VS Code Live Server (Recommended)
+1. Open the project in VS Code
+2. Install the **Live Server** extension
+3. Right-click `index.html`
+4. Click **Open with Live Server**
+
+---
+
+## 🎨 Design Guidelines
+
+- Dashboard-style UI
+- Card-based layout
+- Warm, neutral color palette
+- No blue, purple, or dark blue backgrounds
+- UX-first design approach
+
+---
+
+## 🎯 Learning Outcomes
+
+This project demonstrates:
+- JavaScript DOM manipulation
+- Event-driven programming
+- State management without backend
+- User interaction handling
+- UI/UX-focused frontend development
+
+---
+
+## 🧠 Ideal Use Cases
+
+- College mini-projects
+- Hackathons
+- JavaScript practice
+- Frontend portfolios
+- Viva and interview explanations
+
+---
+
+## 🔮 Future Enhancements (Optional)
+
+- LocalStorage for data persistence
+- Charts for finance visualization
+- Animations and transitions
+- Mobile responsiveness
+- Theme customization (non-blue)
+
+---
+
+## 📌 Note
+
+Student-Dost focuses entirely on **frontend logic and user experience**.  
+All data exists only during the browser session unless extended using LocalStorage.
+
+---
