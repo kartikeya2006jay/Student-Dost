@@ -2,64 +2,243 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>LifeOS Dashboard</title>
+  <title>Student-Dost Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
 <header>
-  <h1>LifeOS</h1>
-  <p>Manage Tasks • Money • Habits</p>
+  <!-- Bubble Background -->
+  <div class="bubble-background">
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+  </div>
+  
+  <div class="header-content">
+    <div class="logo">
+      <div class="logo-icon">
+        <i class="fas fa-life-ring"></i>
+      </div>
+      <div>
+        <h1>Stuent-Dost</h1>
+        <p class="tagline">Manage Tasks • Money • Habits • Life</p>
+      </div>
+    </div>
+    
+    <div class="stats-container">
+      <div class="stat-card">
+        <div class="stat-icon task-icon">
+          <i class="fas fa-tasks"></i>
+        </div>
+        <div class="stat-info">
+          <span id="totalTasks" class="stat-number">0</span>
+          <p class="stat-label">Tasks</p>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon transaction-icon">
+          <i class="fas fa-exchange-alt"></i>
+        </div>
+        <div class="stat-info">
+          <span id="totalTransactions" class="stat-number">0</span>
+          <p class="stat-label">Transactions</p>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon streak-icon">
+          <i class="fas fa-fire"></i>
+        </div>
+        <div class="stat-info">
+          <span id="currentStreak" class="stat-number">0</span>
+          <p class="stat-label">Day Streak</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </header>
 
 <main class="grid">
 
   <!-- TASK MANAGEMENT -->
-  <section class="card">
-    <h2>Daily Tasks</h2>
-    <input id="taskInput" placeholder="Enter task">
-    <button onclick="addTask()">Add Task</button>
-    <ul id="taskList"></ul>
+  <section class="card task-card">
+    <div class="card-header">
+      <div class="card-title">
+        <div class="title-icon">
+          <i class="fas fa-tasks"></i>
+        </div>
+        <h2>Daily Tasks</h2>
+      </div>
+      <div class="card-actions">
+        <span class="badge" id="taskCount">0</span>
+      </div>
+    </div>
+    
+    <div class="card-body">
+      <div class="input-group">
+        <div class="input-icon">
+          <i class="fas fa-pen"></i>
+        </div>
+        <input id="taskInput" placeholder="What needs to be done today?">
+        <button onclick="addTask()" class="add-btn">
+          <i class="fas fa-plus"></i> Add
+        </button>
+      </div>
+      
+      <div class="task-list-container">
+        <ul id="taskList" class="task-list"></ul>
+      </div>
+    </div>
+    
+    <div class="card-footer">
+      <button onclick="clearCompletedTasks()" class="clear-btn">
+        <i class="fas fa-trash-alt"></i> Clear Completed
+      </button>
+    </div>
   </section>
 
   <!-- FINANCE MANAGEMENT -->
-  <section class="card">
-    <h2>Finance Manager</h2>
-
-    <input type="number" id="amount" placeholder="Amount ₹">
+  <section class="card finance-card">
+    <div class="card-header">
+      <div class="card-title">
+        <div class="title-icon">
+          <i class="fas fa-wallet"></i>
+        </div>
+        <h2>Finance Manager</h2>
+      </div>
+      <div class="balance-display">
+        <p class="balance-label">Current Balance</p>
+        <p id="balance" class="balance-amount">₹0.00</p>
+      </div>
+    </div>
     
-    <select id="category">
-      <option>Food</option>
-      <option>Transport</option>
-      <option>Education</option>
-      <option>Entertainment</option>
-      <option>Other</option>
-    </select>
-
-    <select id="type">
-      <option value="income">Income</option>
-      <option value="expense">Expense</option>
-    </select>
-
-    <button onclick="addTransaction()">Add Transaction</button>
-
-    <p id="balance">Balance: ₹0</p>
-    <p id="warning" class="warning"></p>
-
-    <ul id="transactionList"></ul>
+    <div class="card-body">
+      <div class="finance-inputs">
+        <div class="input-with-label">
+          <label>Amount</label>
+          <div class="amount-input">
+            <span class="currency-symbol">₹</span>
+            <input type="number" id="amount" placeholder="0.00" min="0" step="0.01">
+          </div>
+        </div>
+        
+        <div class="input-with-label">
+          <label>Category</label>
+          <div class="select-wrapper">
+            <select id="category">
+              <option value="Food">🍎 Food</option>
+              <option value="Transport">🚗 Transport</option>
+              <option value="Education">📚 Education</option>
+              <option value="Entertainment">🎬 Entertainment</option>
+              <option value="Other">📦 Other</option>
+            </select>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+        </div>
+        
+        <div class="input-with-label">
+          <label>Type</label>
+          <div class="type-selector">
+            <div class="type-option active" data-type="expense" onclick="selectType('expense')">
+              <i class="fas fa-arrow-up"></i>
+              <span>Expense</span>
+            </div>
+            <div class="type-option" data-type="income" onclick="selectType('income')">
+              <i class="fas fa-arrow-down"></i>
+              <span>Income</span>
+            </div>
+            <input type="hidden" id="type" value="expense">
+          </div>
+        </div>
+        
+        <button onclick="addTransaction()" class="add-transaction-btn">
+          <i class="fas fa-plus-circle"></i> Add Transaction
+        </button>
+      </div>
+      
+      <div id="warning" class="warning-alert">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>Warning: You are spending more than your income!</span>
+      </div>
+      
+      <div class="transactions-section">
+        <div class="section-header">
+          <h3>Recent Transactions</h3>
+          <span class="badge" id="transactionCount">0</span>
+        </div>
+        <div class="transactions-container">
+          <ul id="transactionList" class="transaction-list"></ul>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- HABIT TRACKER -->
-  <section class="card">
-    <h2>Habit Tracker</h2>
-    <button onclick="markHabit()">✔ Mark Today Complete</button>
-    <p id="streak">Streak: 0 days</p>
+  <section class="card habit-card">
+    <div class="card-header">
+      <div class="card-title">
+        <div class="title-icon">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <h2>Habit Tracker</h2>
+      </div>
+      <div class="streak-display">
+        <div class="flame-container">
+          <i class="fas fa-fire flame-icon"></i>
+          <span id="streak" class="streak-count">0</span>
+        </div>
+        <p class="streak-label">Day Streak</p>
+      </div>
+    </div>
+    
+    <div class="card-body">
+      <div class="calendar-container">
+        <div class="calendar-header">
+          <h3>This Week</h3>
+          <span class="current-date" id="currentDate">Today</span>
+        </div>
+        <div id="weekCalendar" class="week-calendar"></div>
+      </div>
+      
+      <div class="habit-actions">
+        <button onclick="markHabit()" class="primary-btn">
+          <i class="fas fa-check-circle"></i> Mark Today Complete
+        </button>
+        <button onclick="resetStreak()" class="secondary-btn">
+          <i class="fas fa-redo"></i> Reset Streak
+        </button>
+      </div>
+      
+      <div class="motivation-card">
+        <div class="quote-icon">
+          <i class="fas fa-quote-left"></i>
+        </div>
+        <p id="motivationText" class="motivation-text">Every great journey begins with a single step. Start your streak today!</p>
+        <div class="quote-icon right">
+          <i class="fas fa-quote-right"></i>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Streak celebration overlay -->
+    <div id="streakCelebration" class="streak-achievement"></div>
   </section>
 
 </main>
 
 <footer>
-  <button onclick="saveData()">Save All Data</button>
+  <div class="footer-content">
+    <button onclick="saveData()" class="save-btn">
+      <i class="fas fa-cloud-upload-alt"></i> Save All Data
+    </button>
+    <p class="footer-note">Your data is automatically saved locally</p>
+  </div>
 </footer>
 
 <script src="script.js"></script>
