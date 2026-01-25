@@ -4,9 +4,10 @@ let balance = 0;
 let streak = 0;
 let lastHabitDate = null;
 let weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+let isDarkMode = false;
 
-// Initialize the app
 function init() {
+  loadTheme();
   loadData();
   renderTasks();
   renderTransactions();
@@ -17,13 +18,43 @@ function init() {
   updateCurrentDate();
 }
 
-// Load data from localStorage
+function loadTheme() {
+  const savedTheme = localStorage.getItem('studentDost_theme');
+  if (savedTheme === 'dark') {
+    isDarkMode = true;
+    document.body.setAttribute('data-theme', 'dark');
+    document.getElementById('themeIcon').textContent = '☀️';
+    document.getElementById('themeText').textContent = 'Light Mode';
+  }
+}
+
+function toggleTheme() {
+  isDarkMode = !isDarkMode;
+  const body = document.body;
+  const themeIcon = document.getElementById('themeIcon');
+  const themeText = document.getElementById('themeText');
+  
+  if (isDarkMode) {
+    body.setAttribute('data-theme', 'dark');
+    themeIcon.textContent = '☀️';
+    themeText.textContent = 'Light Mode';
+  } else {
+    body.removeAttribute('data-theme');
+    themeIcon.textContent = '🌙';
+    themeText.textContent = 'Dark Mode';
+  }
+  
+  localStorage.setItem('studentDost_theme', isDarkMode ? 'dark' : 'light');
+}
+
+document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
 function loadData() {
-  const savedTasks = localStorage.getItem('lifeOS_tasks');
-  const savedTransactions = localStorage.getItem('lifeOS_transactions');
-  const savedBalance = localStorage.getItem('lifeOS_balance');
-  const savedStreak = localStorage.getItem('lifeOS_streak');
-  const savedLastHabitDate = localStorage.getItem('lifeOS_lastHabitDate');
+  const savedTasks = localStorage.getItem('studentDost_tasks');
+  const savedTransactions = localStorage.getItem('studentDost_transactions');
+  const savedBalance = localStorage.getItem('studentDost_balance');
+  const savedStreak = localStorage.getItem('studentDost_streak');
+  const savedLastHabitDate = localStorage.getItem('studentDost_lastHabitDate');
   
   if (savedTasks) tasks = JSON.parse(savedTasks);
   if (savedTransactions) transactions = JSON.parse(savedTransactions);
@@ -31,50 +62,37 @@ function loadData() {
   if (savedStreak) streak = parseInt(savedStreak);
   if (savedLastHabitDate) lastHabitDate = new Date(savedLastHabitDate);
   
-  // Update balance display
   document.getElementById('balance').innerText = `₹${balance.toFixed(2)}`;
   document.getElementById('streak').innerText = streak;
 }
 
-// Setup event listeners
 function setupEventListeners() {
-  // Enter key for adding tasks
   document.getElementById('taskInput').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-      addTask();
-    }
+    if (e.key === 'Enter') addTask();
   });
   
-  // Enter key for adding transactions
   document.getElementById('amount').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-      addTransaction();
-    }
+    if (e.key === 'Enter') addTransaction();
   });
   
-  // Focus on amount input when category changes
   document.getElementById('category').addEventListener('change', function() {
     document.getElementById('amount').focus();
   });
 }
 
-// Update current date display
 function updateCurrentDate() {
   const today = new Date();
   const options = { weekday: 'long', month: 'long', day: 'numeric' };
   document.getElementById('currentDate').textContent = today.toLocaleDateString('en-US', options);
 }
 
-// Update all stats
 function updateStats() {
-  const completedTasks = tasks.filter(t => t.completed).length;
   document.getElementById('totalTasks').innerText = tasks.length;
   document.getElementById('totalTransactions').innerText = transactions.length;
   document.getElementById('currentStreak').innerText = streak;
   document.getElementById('taskCount').innerText = tasks.length;
   document.getElementById('transactionCount').innerText = transactions.length;
   
-  // Update warning if balance is negative
   const warningElement = document.getElementById('warning');
   if (balance < 0) {
     warningElement.style.display = 'flex';
@@ -82,18 +100,16 @@ function updateStats() {
     warningElement.style.display = 'none';
   }
   
-  // Update balance color based on value
   const balanceElement = document.getElementById('balance');
   if (balance < 0) {
     balanceElement.style.color = 'var(--color-danger)';
   } else if (balance > 0) {
     balanceElement.style.color = 'var(--color-success)';
   } else {
-    balanceElement.style.color = 'var(--color-dark)';
+    balanceElement.style.color = 'var(--text-primary)';
   }
 }
 
-// Task functions
 function addTask() {
   const input = document.getElementById('taskInput');
   const taskText = input.value.trim();
@@ -116,7 +132,6 @@ function addTask() {
   updateStats();
   saveToLocalStorage();
   
-  // Show animation
   const addBtn = document.querySelector('.add-btn');
   addBtn.innerHTML = '<i class="fas fa-check"></i> Added!';
   setTimeout(() => {
@@ -137,7 +152,6 @@ function renderTasks() {
     return;
   }
   
-  // Sort tasks: incomplete first, then by creation date
   const sortedTasks = [...tasks].sort((a, b) => {
     if (a.completed !== b.completed) return a.completed ? 1 : -1;
     return new Date(b.createdAt) - new Date(a.createdAt);
@@ -201,11 +215,9 @@ function clearCompletedTasks() {
   }
 }
 
-// Finance functions
 function selectType(type) {
   document.getElementById('type').value = type;
   
-  // Update UI
   document.querySelectorAll('.type-option').forEach(option => {
     if (option.dataset.type === type) {
       option.classList.add('active');
@@ -243,22 +255,18 @@ function addTransaction() {
     })
   };
   
-  transactions.unshift(transaction); // Add to beginning
+  transactions.unshift(transaction);
   
-  // Update balance
   balance += type === 'income' ? amount : -amount;
   
-  // Clear and focus input
   amountInput.value = '';
   amountInput.focus();
   
-  // Update UI
   document.getElementById('balance').innerText = `₹${balance.toFixed(2)}`;
   renderTransactions();
   updateStats();
   saveToLocalStorage();
   
-  // Show success animation
   const addBtn = document.querySelector('.add-transaction-btn');
   const originalHTML = addBtn.innerHTML;
   addBtn.innerHTML = '<i class="fas fa-check"></i> Added!';
@@ -285,7 +293,6 @@ function renderTransactions() {
     return;
   }
   
-  // Show only the last 5 transactions
   const recentTransactions = transactions.slice(0, 5);
   
   list.innerHTML = '';
@@ -311,13 +318,10 @@ function renderTransactions() {
   });
 }
 
-// ========== IMPROVED HABIT TRACKER FUNCTIONS ==========
-
 function markHabit() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   
-  // Check if habit was already marked today
   if (lastHabitDate) {
     const lastDate = new Date(lastHabitDate);
     lastDate.setHours(0, 0, 0, 0);
@@ -330,33 +334,26 @@ function markHabit() {
       animateTodayButton();
       return;
     } else if (diffDays === 1) {
-      // Consecutive day
       streak++;
       showNotification(`🔥 Streak continues! Day ${streak} complete!`, 'success');
     } else if (diffDays > 1) {
-      // Broken streak
       showNotification(`💔 Streak broken after ${streak} days! Starting fresh...`, 'warning');
       streak = 1;
     }
   } else {
-    // First time
     streak = 1;
     showNotification('🌟 First day of your new streak! Keep it up!', 'success');
   }
   
   lastHabitDate = today;
   
-  // Update UI
   updateStreakDisplay();
   updateStats();
   renderWeekCalendar();
   updateMotivation();
   saveToLocalStorage();
   
-  // Show celebration for milestones
   celebrateStreakMilestone();
-  
-  // Button animation
   animateTodayButton();
 }
 
@@ -364,7 +361,6 @@ function updateStreakDisplay() {
   const streakElement = document.getElementById('streak');
   const flameIcon = document.querySelector('.flame-icon');
   
-  // Animate the streak number
   streakElement.style.transform = 'scale(1.2)';
   streakElement.style.transition = 'transform 0.3s ease';
   
@@ -373,7 +369,6 @@ function updateStreakDisplay() {
     streakElement.innerText = streak;
   }, 150);
   
-  // Enhance flame animation for higher streaks
   if (streak >= 7) {
     flameIcon.style.animationDuration = '1s';
     flameIcon.style.filter = 'drop-shadow(0 2px 6px rgba(255, 107, 53, 0.8)) drop-shadow(0 0 15px rgba(255, 107, 53, 0.6))';
@@ -386,7 +381,6 @@ function celebrateStreakMilestone() {
   const celebration = document.getElementById('streakCelebration');
   
   if (streak % 7 === 0) {
-    // Weekly milestone
     celebration.innerHTML = '🎉 WEEK!';
     celebration.style.display = 'block';
     
@@ -396,7 +390,6 @@ function celebrateStreakMilestone() {
     
     showNotification(`🎊 AMAZING! ${streak}-day streak! That's ${streak/7} week${streak/7 > 1 ? 's' : ''}!`, 'success');
   } else if (streak === 30) {
-    // Monthly milestone
     celebration.innerHTML = '🏆 MONTH!';
     celebration.style.display = 'block';
     
@@ -406,7 +399,6 @@ function celebrateStreakMilestone() {
     
     showNotification('🏆 INCREDIBLE! You have maintained a 30-day streak!', 'success');
   } else if (streak === 100) {
-    // 100 days milestone
     celebration.innerHTML = '💯 DAYS!';
     celebration.style.display = 'block';
     
@@ -445,9 +437,8 @@ function renderWeekCalendar() {
   weekContainer.innerHTML = '';
   
   const today = new Date();
-  const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+  const dayOfWeek = today.getDay();
   
-  // Calculate start of week (Sunday)
   const startOfWeek = new Date(today);
   startOfWeek.setDate(today.getDate() - dayOfWeek);
   
@@ -458,33 +449,27 @@ function renderWeekCalendar() {
     const dayElement = document.createElement('div');
     dayElement.className = 'day';
     
-    // Check if this day should be marked
     let isActive = false;
     let isToday = false;
     
-    // Check if it's today
     if (day.getDate() === today.getDate() && 
         day.getMonth() === today.getMonth() && 
         day.getFullYear() === today.getFullYear()) {
       isToday = true;
     }
     
-    // Check if habit was marked on this day
     if (lastHabitDate) {
       const habitDate = new Date(lastHabitDate);
       habitDate.setHours(0, 0, 0, 0);
       const checkDate = new Date(day);
       checkDate.setHours(0, 0, 0, 0);
       
-      // Check if the dates match
       if (habitDate.getTime() === checkDate.getTime()) {
         isActive = true;
       }
       
-      // For streak visualization, show active days for current streak
       if (streak > 0) {
         const daysAgo = Math.floor((today - day) / (1000 * 60 * 60 * 24));
-        // Show active for today and past streak days
         if (daysAgo >= 0 && daysAgo < streak) {
           isActive = true;
         }
@@ -498,10 +483,8 @@ function renderWeekCalendar() {
       </div>
     `;
     
-    // Add click event to mark day
     dayElement.querySelector('.day-circle').addEventListener('click', function() {
       if (!isActive) {
-        // For demo purposes, allow marking any day
         markDay(day);
       }
     });
@@ -510,23 +493,19 @@ function renderWeekCalendar() {
   }
 }
 
-// Helper function to mark a specific day
 function markDay(date) {
   const formattedDate = date.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
   if (confirm(`Mark habit for ${formattedDate}?`)) {
-    // For demo - update streak and last habit date
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const selectedDate = new Date(date);
     selectedDate.setHours(0, 0, 0, 0);
     
-    // Check if this date is in the future
     if (selectedDate > today) {
       showNotification("Cannot mark future dates!", 'warning');
       return;
     }
     
-    // Check if this date is already marked
     if (lastHabitDate) {
       const lastDate = new Date(lastHabitDate);
       lastDate.setHours(0, 0, 0, 0);
@@ -537,11 +516,9 @@ function markDay(date) {
       }
     }
     
-    // Update streak based on date
     if (!lastHabitDate || selectedDate.getTime() === today.getTime()) {
       streak++;
     } else {
-      // For past dates, just mark them without affecting streak
       showNotification(`Marked habit for ${formattedDate}!`, 'success');
     }
     
@@ -575,7 +552,6 @@ function updateMotivation() {
     100: "👑 100 DAYS! Legendary commitment!"
   };
   
-  // Find the closest milestone or use generic message
   let closestKey = 0;
   for (const key in motivations) {
     if (streak >= parseInt(key)) {
@@ -587,7 +563,6 @@ function updateMotivation() {
     `${streak} days! Your consistency is truly remarkable!`;
 }
 
-// Animation for today button
 function animateTodayButton() {
   const todayBtn = document.querySelector('.primary-btn');
   const originalText = todayBtn.innerHTML;
@@ -603,7 +578,6 @@ function animateTodayButton() {
   }, 1000);
 }
 
-// Helper functions
 function formatTime(dateString) {
   const date = new Date(dateString);
   const now = new Date();
@@ -624,7 +598,6 @@ function formatTime(dateString) {
 }
 
 function showNotification(message, type = 'info') {
-  // Create notification element
   const notification = document.createElement('div');
   notification.className = `notification ${type}`;
   notification.innerHTML = `
@@ -632,10 +605,8 @@ function showNotification(message, type = 'info') {
     <span>${message}</span>
   `;
   
-  // Add to body
   document.body.appendChild(notification);
   
-  // Add notification styles if not already present
   if (!document.getElementById('notification-styles')) {
     const style = document.createElement('style');
     style.id = 'notification-styles';
@@ -646,7 +617,7 @@ function showNotification(message, type = 'info') {
         right: 20px;
         padding: 15px 20px;
         border-radius: var(--radius-small);
-        background: white;
+        background: var(--bg-card);
         box-shadow: var(--shadow-heavy);
         display: flex;
         align-items: center;
@@ -698,7 +669,6 @@ function showNotification(message, type = 'info') {
     document.head.appendChild(style);
   }
   
-  // Remove after 3 seconds
   setTimeout(() => {
     if (notification.parentNode) {
       notification.parentNode.removeChild(notification);
@@ -706,22 +676,19 @@ function showNotification(message, type = 'info') {
   }, 3000);
 }
 
-// Save to localStorage
 function saveToLocalStorage() {
-  localStorage.setItem('lifeOS_tasks', JSON.stringify(tasks));
-  localStorage.setItem('lifeOS_transactions', JSON.stringify(transactions));
-  localStorage.setItem('lifeOS_balance', balance.toString());
-  localStorage.setItem('lifeOS_streak', streak.toString());
+  localStorage.setItem('studentDost_tasks', JSON.stringify(tasks));
+  localStorage.setItem('studentDost_transactions', JSON.stringify(transactions));
+  localStorage.setItem('studentDost_balance', balance.toString());
+  localStorage.setItem('studentDost_streak', streak.toString());
   if (lastHabitDate) {
-    localStorage.setItem('lifeOS_lastHabitDate', lastHabitDate.toISOString());
+    localStorage.setItem('studentDost_lastHabitDate', lastHabitDate.toISOString());
   }
 }
 
-// Simulate save to backend
 function saveData() {
   saveToLocalStorage();
   
-  // Show success animation
   const saveBtn = document.querySelector('.save-btn');
   const originalHTML = saveBtn.innerHTML;
   
@@ -736,5 +703,4 @@ function saveData() {
   }, 2000);
 }
 
-// Initialize the app when the page loads
 window.onload = init;
